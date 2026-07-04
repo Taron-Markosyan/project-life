@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($file = \"C:\\\\Users\\\\taron\\\\.claude\\\\projects\\\\c--Users-taron-Desktop-project-life\\\\0692a7a4-3575-450c-80f7-c0e2b17ea4f9.jsonl\"; $content = Get-Content $file -Raw; $snippet = $content.Substring\\(1372461, [Math]::Min\\(6000, $content.Length - 1372461\\)\\); Write-Host $snippet)"
+    ]
+  }
+}

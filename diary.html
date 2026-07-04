@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Գլյուկոզի մոնիթորինգի օրագիր — Project LIFE</title>
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <section class="page-head">
+      <div class="container">
+        <h1>Գլյուկոզի մոնիթորինգի օրագիր</h1>
+        <p class="page-head__sub">Գրանցեք արյան շաքարը և հետևեք փոփոխություններին</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="diary-intro">
+          Գլյուկոզի մոնիթորինգի օրագիրը հնարավորություն է տալիս գրանցել արյան շաքարի
+          մակարդակը, հետևել փոփոխություններին և ավելի լավ հասկանալ օրգանիզմի արձագանքը
+          սննդին, ինսուլինին ու առօրյային։ Տվյալները պահվում են միայն ձեր սարքում և կարող
+          են արտահանվել CSV կամ PDF ձևաչափով՝ բժշկի հետ կիսվելու համար։
+        </p>
+
+        <div class="diary">
+          <!-- ENTRY FORM -->
+          <div class="diary__form-card">
+            <div class="diary__form-top">
+              <h2 class="diary__form-title" id="dFormTitle">Նոր չափում</h2>
+              <div class="diary__unit" role="group" aria-label="Չափման միավոր">
+                <button type="button" class="diary__unit-btn is-active" data-unit="mmol">mmol/L</button>
+                <button type="button" class="diary__unit-btn" data-unit="mgdl">mg/dL</button>
+              </div>
+            </div>
+
+            <div class="diary__fields">
+              <div class="diary__field">
+                <label for="dDate">Ամսաթիվ</label>
+                <input class="diary__input" type="date" id="dDate">
+              </div>
+              <div class="diary__field">
+                <label for="dTime">Ժամ</label>
+                <input class="diary__input" type="time" id="dTime">
+              </div>
+              <div class="diary__field">
+                <label for="dValue">Արյան գլյուկոզ <span class="diary__unit-tag" id="dValueUnit">(mmol/L)</span></label>
+                <input class="diary__input" type="number" id="dValue" inputmode="decimal" min="0" step="0.1" placeholder="0">
+              </div>
+              <div class="diary__field diary__field--wide">
+                <label for="dNote">Նշում <span class="diary__optional">(ոչ պարտադիր)</span></label>
+                <input class="diary__input" type="text" id="dNote" maxlength="120" placeholder="օր. ճաշ, ինսուլին, մարզանք">
+              </div>
+            </div>
+
+            <p class="diary__form-error" id="dError" role="alert"></p>
+            <div class="diary__form-actions">
+              <button type="button" class="btn btn--maroon diary__add" id="dAdd">Ավելացնել</button>
+              <button type="button" class="diary__cancel-edit" id="dCancelEdit" hidden>Չեղարկել</button>
+            </div>
+          </div>
+
+          <!-- SUMMARY (shown when there are entries) -->
+          <div class="diary__summary" id="dSummary" hidden>
+            <div class="diary__stat">
+              <span class="diary__stat-num" id="dStatCount">0</span>
+              <span class="diary__stat-label">Չափում</span>
+            </div>
+            <div class="diary__stat">
+              <span class="diary__stat-num" id="dStatAvg">–</span>
+              <span class="diary__stat-label">Միջին <span id="dStatAvgUnit">mmol/L</span></span>
+            </div>
+            <div class="diary__stat">
+              <span class="diary__stat-num" id="dStatRange">–</span>
+              <span class="diary__stat-label">Թիրախային միջակայքում</span>
+            </div>
+          </div>
+
+          <!-- LOG -->
+          <div class="diary__log" id="dLog">
+            <div class="diary__log-head" aria-hidden="true">
+              <span>Կարգավիճակ</span><span>Ամսաթիվ</span><span>Ժամ</span>
+              <span>Մակարդակ</span><span>Նշում</span><span></span>
+            </div>
+            <div id="dRows"></div>
+            <p class="diary__empty" id="dEmpty">Դեռ չափումներ չկան։ Ավելացրեք առաջինը վերևի ձևից։</p>
+          </div>
+
+          <!-- EXPORT -->
+          <div class="diary__export" id="dExport" hidden>
+            <button type="button" class="btn btn--navy" id="dCsv">Արտահանել CSV</button>
+            <button type="button" class="btn btn--navy" id="dPdf">Արտահանել PDF</button>
+          </div>
+
+          <div class="diary__disclaimer">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+            <span>Թիրախային միջակայքը (3.9–10.0 mmol/L) ընդհանուր ուղենիշ է և կարող է
+            տարբերվել ըստ անձի։ Ձեր անհատական նպատակները որոշեք բժշկի հետ։ Տվյալները
+            պահվում են միայն այս դիտարկիչում՝ ձեր սարքում։</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+
+  <script>window.ACTIVE_PAGE = 'diary.html';</script>
+  <script src="js/components.js"></script>
+  <script src="js/main.js"></script>
+
+  <!-- ===========================================================
+       DIARY LOGIC (page-specific)
+       Readings are stored canonically in mmol/L in localStorage and
+       converted for display. Target range thresholds (mmol/L) are
+       LOW and HIGH below — adjust if a clinician prefers other values.
+       =========================================================== -->
+  <script>
+  (function () {
+    const STORAGE_KEY = 'projectlife_glucose_diary_v1';
+    const LOW = 3.9, HIGH = 10.0;           // mmol/L target band
+    const MGDL = 18.0;                       // 1 mmol/L = 18 mg/dL
+
+    let unit = 'mmol';
+    let entries = [];
+    let editingId = null;
+
+    const $ = function (id) { return document.getElementById(id); };
+    const dateEl = $('dDate'), timeEl = $('dTime'), valueEl = $('dValue'),
+          noteEl = $('dNote'), errEl = $('dError'),
+          rowsEl = $('dRows'), emptyEl = $('dEmpty'),
+          summaryEl = $('dSummary'), exportEl = $('dExport'),
+          valueUnitEl = $('dValueUnit'), avgUnitEl = $('dStatAvgUnit'),
+          formTitleEl = $('dFormTitle'), addBtn = $('dAdd'), cancelBtn = $('dCancelEdit');
+
+    /* ---- storage (guarded so a sandboxed preview still works) ---- */
+    function load() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+      catch (e) { return []; }
+    }
+    function save() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
+      catch (e) { /* storage unavailable — keep in memory for this session */ }
+    }
+
+    /* ---- unit helpers ---- */
+    function display(mmol) {
+      return unit === 'mgdl'
+        ? String(Math.round(mmol * MGDL))
+        : (Math.round(mmol * 10) / 10).toLocaleString('hy-AM');
+    }
+    function unitLabel() { return unit === 'mgdl' ? 'mg/dL' : 'mmol/L'; }
+    function statusOf(mmol) { return mmol < LOW ? 'low' : (mmol > HIGH ? 'high' : 'ok'); }
+    const STATUS_TEXT = { low: 'Ցածր', ok: 'Թիրախում', high: 'Բարձր' };
+
+    function fmtDate(iso) {            // yyyy-mm-dd -> dd.mm.yyyy
+      if (!iso) return '';
+      const p = iso.split('-');
+      return p.length === 3 ? p[2] + '.' + p[1] + '.' + p[0] : iso;
+    }
+
+    /* ---- rendering ---- */
+    function render() {
+      // newest first
+      const sorted = entries.slice().sort(function (a, b) {
+        return (b.date + b.time).localeCompare(a.date + a.time);
+      });
+
+      rowsEl.innerHTML = sorted.map(function (e) {
+        const st = statusOf(e.mmol);
+        return '<div class="diary__row diary__row--' + st + '">' +
+          '<span class="diary__cell diary__cell--status"><span class="diary__dot"></span>' + STATUS_TEXT[st] + '</span>' +
+          '<span class="diary__cell" data-label="Ամսաթիվ">' + fmtDate(e.date) + '</span>' +
+          '<span class="diary__cell" data-label="Ժամ">' + (e.time || '') + '</span>' +
+          '<span class="diary__cell diary__cell--value" data-label="Մակարդակ">' + display(e.mmol) + ' <small>' + unitLabel() + '</small></span>' +
+          '<span class="diary__cell diary__cell--note" data-label="Նշում">' + (e.note ? escapeHtml(e.note) : '—') + '</span>' +
+          '<span class="diary__cell diary__cell--action">' +
+            '<button type="button" class="diary__edit" data-id="' + e.id + '" aria-label="Խմբագրել">Խմբագրել</button>' +
+            '<button type="button" class="diary__del" data-id="' + e.id + '" aria-label="Ջնջել">Ջնջել</button>' +
+          '</span>' +
+          '</div>';
+      }).join('');
+
+      const has = entries.length > 0;
+      emptyEl.hidden = has;
+      summaryEl.hidden = !has;
+      exportEl.hidden = !has;
+      document.querySelector('.diary__log-head').hidden = !has;
+
+      if (has) {
+        const avg = entries.reduce(function (s, e) { return s + e.mmol; }, 0) / entries.length;
+        const inRange = entries.filter(function (e) { return statusOf(e.mmol) === 'ok'; }).length;
+        $('dStatCount').textContent = entries.length;
+        $('dStatAvg').textContent = display(avg);
+        $('dStatRange').textContent = Math.round(inRange / entries.length * 100) + '%';
+        avgUnitEl.textContent = unitLabel();
+      }
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    /* ---- edit mode ---- */
+    function startEdit(id) {
+      const entry = entries.find(function (x) { return x.id === id; });
+      if (!entry) return;
+      editingId = id;
+      dateEl.value = entry.date;
+      timeEl.value = entry.time;
+      valueEl.value = display(entry.mmol);
+      noteEl.value = entry.note || '';
+      formTitleEl.textContent = 'Խմբագրել չափումը';
+      addBtn.textContent = 'Պահպանել փոփոխությունները';
+      cancelBtn.hidden = false;
+      errEl.textContent = '';
+      valueEl.focus();
+      document.querySelector('.diary__form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function cancelEdit() {
+      editingId = null;
+      formTitleEl.textContent = 'Նոր չափում';
+      addBtn.textContent = 'Ավելացնել';
+      cancelBtn.hidden = true;
+      errEl.textContent = '';
+      const now = new Date();
+      dateEl.value = now.toISOString().slice(0, 10);
+      timeEl.value = now.toTimeString().slice(0, 5);
+      valueEl.value = ''; noteEl.value = '';
+    }
+
+    /* ---- actions ---- */
+    function addEntry() {
+      errEl.textContent = '';
+      const raw = parseFloat(valueEl.value);
+      if (!dateEl.value) { errEl.textContent = 'Ընտրեք ամսաթիվը։'; return; }
+      if (!timeEl.value) { errEl.textContent = 'Ընտրեք ժամը։'; return; }
+      if (!raw || raw <= 0) { errEl.textContent = 'Մուտքագրեք գլյուկոզի վավեր մակարդակ։'; return; }
+
+      const mmol = unit === 'mgdl' ? raw / MGDL : raw;
+
+      if (editingId) {
+        const entry = entries.find(function (x) { return x.id === editingId; });
+        if (entry) {
+          entry.date = dateEl.value; entry.time = timeEl.value;
+          entry.mmol = mmol; entry.note = noteEl.value.trim();
+        }
+        save();
+        cancelEdit();
+      } else {
+        entries.push({
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          date: dateEl.value, time: timeEl.value, mmol: mmol,
+          note: noteEl.value.trim()
+        });
+        save();
+        valueEl.value = ''; noteEl.value = '';
+        valueEl.focus();
+      }
+      render();
+    }
+
+    rowsEl.addEventListener('click', function (e) {
+      const editBtn = e.target.closest('.diary__edit');
+      if (editBtn) { startEdit(editBtn.dataset.id); return; }
+
+      const delBtn = e.target.closest('.diary__del');
+      if (delBtn) {
+        entries = entries.filter(function (x) { return x.id !== delBtn.dataset.id; });
+        if (editingId === delBtn.dataset.id) cancelEdit();
+        save();
+        render();
+      }
+    });
+
+    $('dAdd').addEventListener('click', addEntry);
+    $('dCancelEdit').addEventListener('click', cancelEdit);
+    valueEl.addEventListener('keydown', function (e) { if (e.key === 'Enter') addEntry(); });
+
+    // unit toggle
+    document.querySelector('.diary__unit').addEventListener('click', function (e) {
+      const btn = e.target.closest('.diary__unit-btn');
+      if (!btn) return;
+      unit = btn.dataset.unit;
+      Array.prototype.forEach.call(this.children, function (c) {
+        c.classList.toggle('is-active', c === btn);
+      });
+      valueUnitEl.textContent = '(' + unitLabel() + ')';
+      valueEl.step = unit === 'mgdl' ? '1' : '0.1';
+      render();
+    });
+
+    /* ---- export ---- */
+    function exportCsv() {
+      const head = ['Ամսաթիվ', 'Ժամ', 'Մակարդակ (' + unitLabel() + ')', 'Կարգավիճակ', 'Նշում'];
+      const rows = entries.slice().sort(function (a, b) {
+        return (a.date + a.time).localeCompare(b.date + b.time);
+      }).map(function (e) {
+        return [fmtDate(e.date), e.time, display(e.mmol), STATUS_TEXT[statusOf(e.mmol)],
+                '"' + (e.note || '').replace(/"/g, '""') + '"'].join(',');
+      });
+      const csv = '\ufeff' + head.join(',') + '\n' + rows.join('\n');   // BOM for Excel + Armenian
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'glucose-diary.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function exportPdf() {
+      // Browser print -> "Save as PDF". Renders Armenian text correctly.
+      document.body.classList.add('diary-printing');
+      window.print();
+      setTimeout(function () { document.body.classList.remove('diary-printing'); }, 300);
+    }
+
+    $('dCsv').addEventListener('click', exportCsv);
+    $('dPdf').addEventListener('click', exportPdf);
+
+    /* ---- init ---- */
+    (function init() {
+      const now = new Date();
+      dateEl.value = now.toISOString().slice(0, 10);
+      timeEl.value = now.toTimeString().slice(0, 5);
+      entries = load();
+      render();
+    })();
+  })();
+  </script>
+</body>
+</html>

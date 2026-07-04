@@ -1,0 +1,83 @@
+/* === CALCULATOR PAGE =============================================
+   The bread-unit (հացային միավոր) calculator. Input panel on the
+   cream card, live result on the navy gradient panel. All selectors
+   are prefixed .calc* so they never collide with site-wide classes. */
+.calc-intro { max-width: 760px; margin: 0 auto 48px; text-align: center; color: var(--text-dark-muted); font-size: 1.02rem; }
+
+.calc { max-width: 1000px; margin-inline: auto; }
+.calc__grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 26px; align-items: stretch; }
+
+/* ---- input panel ---- */
+.calc__panel { background: var(--cream); border: 1px solid var(--line-on-light); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-card); }
+.calc__step { margin-bottom: 26px; }
+.calc__step:last-of-type { margin-bottom: 0; }
+.calc__step-label { display: flex; align-items: center; gap: 10px; font-family: var(--font-heading); font-weight: 600; font-size: 0.96rem; color: var(--text-dark); margin-bottom: 14px; }
+.calc__step-num { width: 24px; height: 24px; flex-shrink: 0; display: grid; place-items: center; background: var(--maroon); color: #fff; border-radius: 50%; font-size: 0.78rem; font-family: var(--font-heading); }
+
+/* category chips */
+.calc__cats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.calc__cat { display: flex; flex-direction: column; align-items: center; gap: 9px; padding: 15px 6px; background: var(--cream-soft); border: 1.5px solid var(--line-on-light); border-radius: var(--radius); cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.15s; text-align: center; font-family: var(--font-body); }
+.calc__cat svg { width: 27px; height: 27px; stroke: var(--text-dark-muted); transition: stroke 0.2s; }
+.calc__cat span { font-size: 0.72rem; color: var(--text-dark-muted); line-height: 1.2; transition: color 0.2s; }
+.calc__cat:hover { transform: translateY(-2px); border-color: rgba(122, 36, 51, 0.4); }
+.calc__cat.is-active { border-color: var(--maroon); background: rgba(122, 36, 51, 0.08); }
+.calc__cat.is-active svg { stroke: var(--maroon); }
+.calc__cat.is-active span { color: var(--maroon); font-weight: 600; }
+
+/* selects + weight input */
+.calc__field { width: 100%; background: var(--cream-soft); border: 1.5px solid var(--line-on-light); border-radius: var(--radius-sm); padding: 14px 16px; font: inherit; color: var(--text-dark); transition: border-color 0.2s; }
+.calc__field:focus-visible { border-color: var(--maroon); outline: none; }
+.calc__field:disabled { opacity: 0.5; cursor: not-allowed; }
+select.calc__field { appearance: none; -webkit-appearance: none; cursor: pointer; padding-right: 42px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235b6477' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; background-size: 16px; }
+.calc__weight { display: flex; align-items: center; gap: 12px; }
+.calc__weight input { flex: 1; }
+.calc__unit-tag { color: var(--text-dark-muted); font-size: 0.92rem; }
+.calc__hint { margin-top: 10px; font-size: 0.82rem; color: var(--text-dark-muted); min-height: 1.1em; }
+.calc__btn { margin-top: 28px; width: 100%; justify-content: center; }
+
+/* ---- result panel ---- */
+.calc__result { background: var(--gradient-brand); color: var(--text-light); border-radius: var(--radius-lg); padding: 36px 32px; display: flex; flex-direction: column; box-shadow: var(--shadow-card); }
+.calc__result-label { font-size: 0.78rem; letter-spacing: 1.6px; text-transform: uppercase; color: var(--text-light-muted); }
+.calc__bu { display: flex; align-items: baseline; gap: 12px; margin-top: 8px; }
+.calc__bu-num { font-family: var(--font-heading); font-weight: 700; font-size: clamp(3.2rem, 9vw, 4.4rem); line-height: 1; transition: color 0.3s; }
+.calc__bu-unit { font-size: 1rem; color: var(--text-light-muted); }
+
+/* signature: bread units drawn as filling tokens */
+.calc__pips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 24px; }
+.calc__pip { width: 26px; height: 26px; border-radius: 7px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.22); overflow: hidden; position: relative; }
+.calc__pip-fill { position: absolute; inset: 0; transform-origin: bottom; background: linear-gradient(180deg, #efb0bb, #c8566b); transition: transform 0.5s ease; }
+
+.calc__carbs { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line-on-dark); display: flex; justify-content: space-between; align-items: center; }
+.calc__carbs-label { color: var(--text-light-muted); font-size: 0.92rem; }
+.calc__carbs-val { font-family: var(--font-heading); font-weight: 600; font-size: 1.45rem; }
+.calc__note-inline { margin-top: 14px; font-size: 0.82rem; color: var(--text-light-muted); }
+
+/* empty state */
+.calc__empty { display: none; color: var(--text-light-muted); font-size: 0.95rem; margin-top: 16px; }
+.calc__result.is-empty .calc__empty { display: block; }
+.calc__result.is-empty .calc__pips,
+.calc__result.is-empty .calc__carbs,
+.calc__result.is-empty .calc__note-inline { display: none; }
+.calc__result.is-empty .calc__bu-num { color: rgba(255, 255, 255, 0.28); }
+
+/* a soft pulse when the Calculate button is pressed */
+@keyframes calcPulse { 0% { box-shadow: var(--shadow-card); } 40% { box-shadow: 0 0 0 4px rgba(122, 36, 51, 0.35), var(--shadow-card); } 100% { box-shadow: var(--shadow-card); } }
+.calc__result.pulse { animation: calcPulse 0.6s ease; }
+
+/* disclaimer */
+.calc__disclaimer { max-width: 1000px; margin: 26px auto 0; background: rgba(122, 36, 51, 0.06); border: 1px solid rgba(122, 36, 51, 0.18); border-radius: var(--radius); padding: 18px 22px; font-size: 0.85rem; color: var(--text-dark-muted); display: flex; gap: 12px; align-items: flex-start; line-height: 1.5; }
+.calc__disclaimer svg { width: 20px; height: 20px; flex-shrink: 0; stroke: var(--maroon); margin-top: 1px; }
+
+@media (max-width: 860px) {
+  .calc__grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .calc__cats { grid-template-columns: repeat(3, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .calc__pip-fill { transition: none; }
+  .calc__result.pulse { animation: none; }
+  .calc__cat { transition: none; }
+}

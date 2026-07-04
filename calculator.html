@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Հացի միավորների հաշվիչ — Project LIFE</title>
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <section class="page-head">
+      <div class="container">
+        <h1>Հացի միավորների հաշվիչ</h1>
+        <p class="page-head__sub">Հաշվեք ածխաջրերն ու հացային միավորները ճիշտ չափաբաժնի համար</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="calc-intro">
+          Հացի միավորների հաշվիչը օգնում է հասկանալ, թե տվյալ չափաբաժինը քանի հացային
+          միավոր է կազմում՝ հաշվի առնելով, որ 1 հացային միավորը հավասար է մոտ 12 գրամ
+          ածխաջրի։ Ընտրեք մթերքը, նշեք քաշը, և արդյունքը կհաշվվի ինքնաշխատ։
+        </p>
+
+        <div class="calc">
+          <div class="calc__grid">
+
+            <!-- INPUTS -->
+            <div class="calc__panel">
+              <div class="calc__step">
+                <div class="calc__step-label">
+                  <span class="calc__step-num">1</span> Ընտրեք մթերքի տեսակը
+                </div>
+                <div class="calc__cats" id="calcCats" role="group" aria-label="Մթերքի տեսակը">
+                  <button type="button" class="calc__cat" data-cat="dairy" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h8l-1 3v3l2 4v9a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-9l2-4V5L8 2Z"/><path d="M7 13h10"/></svg>
+                    <span>Կաթնամթերք</span>
+                  </button>
+                  <button type="button" class="calc__cat" data-cat="grains" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11c0-3 2-5 5-5h6c3 0 5 2 5 5 0 1.5-1 2.5-2 2.5v4a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-4c-1 0-2-1-2-2.5Z"/><path d="M9 6.5 8 13M15 6.5 16 13"/></svg>
+                    <span>Հացահատիկեղեն</span>
+                  </button>
+                  <button type="button" class="calc__cat" data-cat="veg" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20c-4 0-7-3-7-7 0-2 1-4 3-5 1.6-.8 4-1 6 0"/><path d="M13 20c4 0 7-3 7-7 0-3-2-5-5-5-2 0-3 1-4 2"/><path d="M12 8c0-3 1-5 4-6"/></svg>
+                    <span>Բանջարեղեն</span>
+                  </button>
+                  <button type="button" class="calc__cat" data-cat="fruit" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8c-2-2-6-2-7 1-1.4 3.5 1 9 4 10 1.4.5 2.6.5 4 0"/><path d="M12 8c2-2 6-2 7 1 1.4 3.5-1 9-4 10-1 .4-2 .5-3 .2"/><path d="M12 8V4"/><path d="M12 4c1-1.5 3-2 4-1"/></svg>
+                    <span>Մրգեր</span>
+                  </button>
+                  <button type="button" class="calc__cat" data-cat="sweets" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M7 12h10" transform="rotate(45 12 12)"/></svg>
+                    <span>Քաղցրավենիք</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="calc__step">
+                <label class="calc__step-label" for="calcFoodSearch">
+                  <span class="calc__step-num">2</span> Ընտրեք մթերքի անվանումը
+                </label>
+                <div class="calc__combobox" id="calcCombobox">
+                  <input class="calc__field" id="calcFoodSearch" type="text" autocomplete="off"
+                         placeholder="Նախ ընտրեք տեսակը" disabled>
+                  <div class="calc__combobox-panel" id="calcFoodPanel" role="listbox" hidden></div>
+                </div>
+              </div>
+
+              <div class="calc__step">
+                <label class="calc__step-label" for="calcWeight">
+                  <span class="calc__step-num">3</span> Նշեք քաշը
+                </label>
+                <div class="calc__weight">
+                  <input class="calc__field" id="calcWeight" type="number" inputmode="numeric"
+                         min="0" max="5000" step="10" placeholder="0" disabled>
+                  <span class="calc__unit-tag" id="calcUnitTag">գրամ</span>
+                </div>
+                <p class="calc__hint" id="calcHint"></p>
+              </div>
+
+              <button type="button" class="btn btn--maroon calc__btn" id="calcBtn">Հաշվել</button>
+            </div>
+
+            <!-- RESULT -->
+            <div class="calc__result is-empty" id="calcResult" aria-live="polite">
+              <div class="calc__result-label">Հացային միավորներ</div>
+              <div class="calc__bu">
+                <span class="calc__bu-num" id="calcBu">0</span>
+                <span class="calc__bu-unit">միավոր</span>
+              </div>
+
+              <p class="calc__empty">Ընտրեք մթերք և նշեք քաշը՝ արդյունքը այստեղ տեսնելու համար։</p>
+
+              <div class="calc__pips" id="calcPips" aria-hidden="true"></div>
+
+              <div class="calc__carbs">
+                <span class="calc__carbs-label">Ընդհանուր ածխաջրեր</span>
+                <span class="calc__carbs-val" id="calcCarbs">0 գ</span>
+              </div>
+
+              <p class="calc__note-inline" id="calcNote"></p>
+            </div>
+
+          </div>
+
+          <div class="calc__disclaimer">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+            <span>Հաշվարկը մոտավոր է և հիմնված է միջին տվյալների վրա։ Այն չի փոխարինում
+            բժշկի կամ դիաբետի կրթության մասնագետի խորհրդին։ Ինսուլինի չափաբաժնի վերաբերյալ
+            որոշումները կայացրեք ձեր բժշկի հետ։</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+
+  <script>window.ACTIVE_PAGE = 'calculator.html';</script>
+  <script src="js/components.js"></script>
+  <script src="js/main.js"></script>
+
+
+  <!-- ===========================================================
+       CALCULATOR LOGIC (page-specific)
+       Each food stores the exact portion (in grams or ml) that
+       equals 1 bread unit (հացային միավոր), taken directly from
+       the reference table rather than derived from carbs-per-100g.
+       1 ՀՄ = 12 g carbohydrate (CARBS_PER_BU) is used only to show
+       an approximate carb total alongside the result.
+       =========================================================== -->
+  <script>
+  (function () {
+    const CARBS_PER_BU = 12;
+
+    // per = grams (or ml) of the food that equal exactly 1 bread unit
+    const FOODS = {
+      dairy: [
+        { name: 'Կաթ',                                  unit: 'մլ', per: 200 },
+        { name: 'Կեֆիր (ոչ քաղցր)',                     unit: 'մլ', per: 200 },
+        { name: 'Կեֆիր (մրգային բաղադրիչով)',           unit: 'մլ', per: 100 },
+        { name: 'Յոգուրտ (ոչ քաղցր)',                   unit: 'մլ', per: 200 },
+        { name: 'Յոգուրտ (մրգային)',                    unit: 'մլ', per: 100 },
+        { name: 'Սերուցք (սլիվկի) 9%',                  unit: 'մլ', per: 200 },
+        { name: 'Մածուն',                               unit: 'մլ', per: 200 },
+        { name: 'Կաթնաշոռ',                             unit: 'գ',  per: 100 },
+        { name: 'Կաթնաշոռ (գլազուրով)',                 unit: 'գ',  per: 35 },
+        { name: 'Կաթնաշոռ (չամիչով)',                   unit: 'գ',  per: 38 },
+        { name: 'Չոր կաթ (փոշի)',                       unit: 'գ',  per: 30 },
+        { name: 'Պաղպաղակ (առանց վաֆլիի և շոկոլադի)',   unit: 'գ',  per: 60 },
+        { name: 'Պաղպաղակ (գլազուրով և վաֆլիով)',       unit: 'գ',  per: 45 },
+      ],
+      grains: [
+        { name: 'Սև հաց',                                unit: 'գ', per: 25 },
+        { name: 'Հաց (սպիտակ/մուգ)',                     unit: 'գ', per: 20 },
+        { name: 'Հաց՝ թեփով',                            unit: 'գ', per: 30 },
+        { name: 'Հաց՝ բորոդինյան',                       unit: 'գ', per: 15 },
+        { name: 'Լավաշ',                                 unit: 'գ', per: 20 },
+        { name: 'Չորահաց (սուխարի)',                     unit: 'գ', per: 20 },
+        { name: 'Չորաբլիթ (սուշկի)',                     unit: 'գ', per: 20 },
+        { name: 'Կրեկերներ',                             unit: 'գ', per: 20 },
+        { name: 'Ձավարեղեն (հում)',                      unit: 'գ', per: 20 },
+        { name: 'Ձավարեղեն (եփած)',                      unit: 'գ', per: 55 },
+        { name: 'Մակարոնեղեն (հում)',                    unit: 'գ', per: 15 },
+        { name: 'Մակարոնեղեն (եփած)',                    unit: 'գ', per: 50 },
+        { name: 'Բլինչիկ (առանց մսի)',                   unit: 'գ', per: 40 },
+        { name: 'Բլինչիկ (մսով)',                        unit: 'գ', per: 50 },
+        { name: 'Բուլկի',                                unit: 'գ', per: 20 },
+        { name: 'Քաղցրաբլիթ (պրյանիկ)',                  unit: 'գ', per: 40 },
+        { name: 'Թխվածքաբլիթ (պեչենի)',                  unit: 'գ', per: 15 },
+        { name: 'Վաֆլի',                                 unit: 'գ', per: 15 },
+        { name: 'Հրուշակ (պիրոժնի)',                     unit: 'գ', per: 20 },
+        { name: 'Երշիկ (եփած-բժշկական)',                 unit: 'գ', per: 100 },
+        { name: 'Կոտլետ (միջին չափսի)',                  unit: 'գ', per: 65 },
+        { name: 'Պելմենի',                               unit: 'գ', per: 50 },
+        { name: 'Նրբերշիկ',                               unit: 'գ', per: 100 },
+        { name: 'Սարդելկա',                              unit: 'գ', per: 100 },
+        { name: 'Օլադի',                                 unit: 'գ', per: 50 },
+        { name: 'Ալյուր (ցանկացած)',                     unit: 'գ', per: 15 },
+        { name: 'Օսլա (կրախմալ)',                        unit: 'գ', per: 15 },
+        { name: 'Աղի-փուռի (փոփ-կորն)',                  unit: 'գ', per: 15 },
+        { name: 'Խմոր (շերտավոր, եփած)',                 unit: 'գ', per: 35 },
+        { name: 'Խմոր (խմորիչով, եփած)',                 unit: 'գ', per: 25 },
+      ],
+      veg: [
+        { name: 'Լոբի (հում)',                           unit: 'գ', per: 20 },
+        { name: 'Լոբի (եփած)',                           unit: 'գ', per: 50 },
+        { name: 'Կանաչ ոլոռ (պահածո)',                   unit: 'գ', per: 120 },
+        { name: 'Չոր ոլոռ',                               unit: 'գ', per: 20 },
+        { name: 'Կարտոֆիլ (հում)',                        unit: 'գ', per: 90 },
+        { name: 'Կարտոֆիլի պյուրե',                       unit: 'գ', per: 80 },
+        { name: 'Կարտոֆիլ տապակած (ֆրի)',                unit: 'գ', per: 35 },
+        { name: 'Կարտոֆիլի չիպս',                         unit: 'գ', per: 25 },
+        { name: 'Կեչուպ',                                 unit: 'գ', per: 15 },
+        { name: 'Եգիպտացորեն (հասկով)',                   unit: 'գ', per: 100 },
+        { name: 'Եգիպտացորեն (հատիկ, պահածո)',            unit: 'գ', per: 65 },
+        { name: 'Գազար',                                  unit: 'գ', per: 400 },
+        { name: 'Բազուկ',                                 unit: 'գ', per: 400 },
+        { name: 'Ոսպ (չոր)',                               unit: 'գ', per: 20 },
+        { name: 'Ոսպ (եփած)',                              unit: 'գ', per: 50 },
+        { name: 'Դդում',                                  unit: 'գ', per: 200 },
+        { name: 'Գետնախնձոր',                             unit: 'գ', per: 70 },
+        { name: 'Հյութ՝ կաղամբի',                         unit: 'մլ', per: 500 },
+        { name: 'Հյութ՝ կարտոֆիլի',                       unit: 'մլ', per: 125 },
+        { name: 'Հյութ՝ գազարի',                          unit: 'մլ', per: 125 },
+        { name: 'Հյութ՝ վարունգի',                        unit: 'մլ', per: 500 },
+        { name: 'Հյութ՝ բազուկի',                          unit: 'մլ', per: 125 },
+        { name: 'Հյութ՝ լոլիկի (տոմատ)',                  unit: 'մլ', per: 300 },
+      ],
+      fruit: [
+        { name: 'Խնձոր',                                  unit: 'գ', per: 86 },
+        { name: 'Տանձ',                                   unit: 'գ', per: 80 },
+        { name: 'Խաղող',                                  unit: 'գ', per: 71 },
+        { name: 'Բանան (առանց կեղևի)',                    unit: 'գ', per: 60 },
+        { name: 'Ծիրան (3 հատ)',                           unit: 'գ', per: 90 },
+        { name: 'Սալոր',                                  unit: 'գ', per: 110 },
+        { name: 'Դեղձ (կորիզով, 1 հատ)',                  unit: 'գ', per: 120 },
+        { name: 'Նեկտարին (1 հատ)',                        unit: 'գ', per: 120 },
+        { name: 'Ելակ (10 հատ)',                           unit: 'գ', per: 150 },
+        { name: 'Կիվի (1 հատ)',                            unit: 'գ', per: 80 },
+        { name: 'Թուզ (1 հատ)',                            unit: 'գ', per: 80 },
+        { name: 'Նուռ (առանց կեղևի)',                     unit: 'գ', per: 130 },
+        { name: 'Մորի (1 բաժակ)',                          unit: 'գ', per: 140 },
+        { name: 'Գետնամորի (1 բաժակ)',                    unit: 'գ', per: 140 },
+        { name: 'Մանդարին (առանց կեղևի)',                 unit: 'գ', per: 100 },
+        { name: 'Նարինջ',                                 unit: 'գ', per: 100 },
+        { name: 'Խուրմա (միջին, 1 հատ)',                  unit: 'գ', per: 80 },
+        { name: 'Ֆեյխոա (10 հատ)',                         unit: 'գ', per: 160 },
+        { name: 'Անանաս (կեղևով)',                        unit: 'գ', per: 375 },
+        { name: 'Ձմերուկ',                                unit: 'գ', per: 150 },
+        { name: 'Սեխ',                                    unit: 'գ', per: 150 },
+        { name: 'Հյութ՝ մանգոյի',                          unit: 'մլ', per: 110 },
+        { name: 'Հյութ՝ նարնջի',                           unit: 'մլ', per: 110 },
+      ],
+      sweets: [
+        { name: 'Մուրաբա (ջեմ)',                          unit: 'գ', per: 14 },
+        { name: 'Կոլա / սպրայտ / ֆանտա',                 unit: 'մլ', per: 100 },
+        { name: 'Շագանակ',                                 unit: 'գ', per: 35 },
+        { name: 'Կվաս',                                   unit: 'մլ', per: 200 },
+        { name: 'Կիսել',                                   unit: 'մլ', per: 300 },
+        { name: 'Շոկոլադե կոնֆետ',                        unit: 'գ', per: 12 },
+        { name: 'Մեղր',                                   unit: 'գ', per: 14 },
+        { name: 'Ընկույզ',                                unit: 'գ', per: 90 },
+        { name: 'Արաքիս',                                 unit: 'գ', per: 40 },
+        { name: 'Հնդկական ընկույզ',                       unit: 'գ', per: 40 },
+        { name: 'Նուշ',                                   unit: 'գ', per: 65 },
+        { name: 'Պնդուկ',                                 unit: 'գ', per: 90 },
+        { name: 'Պիստակ',                                 unit: 'գ', per: 60 },
+        { name: 'Մարմելադ',                                unit: 'գ', per: 20 },
+        { name: 'Շաքար',                                  unit: 'գ', per: 10 },
+        { name: 'Շաքարավազ',                               unit: 'գ', per: 10 },
+        { name: 'Ֆրուկտոզա',                                unit: 'գ', per: 12 },
+        { name: 'Շոկոլադ (սովորական)',                     unit: 'գ', per: 20 },
+        { name: 'Շոկոլադ (շաքարփոխարինիչով)',              unit: 'գ', per: 30 },
+        { name: 'Շոկոլադ (կաթնային)',                      unit: 'գ', per: 20 },
+        { name: 'Մարս',                                   unit: 'գ', per: 20 },
+      ],
+    };
+
+    const MAX_PIPS = 12;
+
+    const catsEl    = document.getElementById('calcCats');
+    const searchEl  = document.getElementById('calcFoodSearch');
+    const panelEl   = document.getElementById('calcFoodPanel');
+    const weightEl  = document.getElementById('calcWeight');
+    const unitTagEl = document.getElementById('calcUnitTag');
+    const hintEl    = document.getElementById('calcHint');
+    const btnEl     = document.getElementById('calcBtn');
+    const resultEl  = document.getElementById('calcResult');
+    const buEl      = document.getElementById('calcBu');
+    const carbsEl   = document.getElementById('calcCarbs');
+    const pipsEl    = document.getElementById('calcPips');
+    const noteEl    = document.getElementById('calcNote');
+
+    let activeCat  = null;
+    let activeFood = null; // the currently selected food object
+
+    function openPanel(items) {
+      if (!items.length) {
+        panelEl.innerHTML = '<div class="calc__combobox-empty">Արդյունք չի գտնվել</div>';
+      } else {
+        panelEl.innerHTML = items.map(function (f) {
+          return '<div class="calc__combobox-item" data-name="' + f.name + '" role="option">' + f.name + '</div>';
+        }).join('');
+      }
+      panelEl.hidden = false;
+    }
+
+    function closePanel() { panelEl.hidden = true; }
+
+    function itemsForQuery(query) {
+      const list = FOODS[activeCat] || [];
+      const q = (query || '').trim().toLowerCase();
+      if (!q) return list;
+      return list.filter(function (f) { return f.name.toLowerCase().indexOf(q) !== -1; });
+    }
+
+    function selectFood(food) {
+      activeFood = food;
+      searchEl.value = food.name;
+      unitTagEl.textContent = food.unit === 'մլ' ? 'մլ' : 'գրամ';
+      weightEl.disabled = false;
+      closePanel();
+      compute();
+    }
+
+    function compute() {
+      const grams = parseFloat(weightEl.value);
+
+      if (!activeFood) { hintEl.textContent = ''; }
+      else { hintEl.textContent = '1 ՀՄ ≈ ' + activeFood.per + ' ' + activeFood.unit + ' (' + activeFood.name + ')'; }
+
+      if (!activeFood || !grams || grams <= 0) {
+        resultEl.classList.add('is-empty');
+        buEl.textContent = '0';
+        carbsEl.textContent = '0 գ';
+        pipsEl.innerHTML = '';
+        noteEl.textContent = '';
+        return;
+      }
+
+      const bu = grams / activeFood.per;
+      const totalCarbs = bu * CARBS_PER_BU;
+
+      resultEl.classList.remove('is-empty');
+      buEl.textContent = (Math.round(bu * 10) / 10).toLocaleString('hy-AM');
+      carbsEl.textContent = Math.round(totalCarbs) + ' գ';
+
+      // pips: one token per bread unit, last token fills proportionally
+      const full = Math.floor(bu);
+      const frac = bu - full;
+      const shown = Math.min(Math.ceil(bu), MAX_PIPS);
+      let html = '';
+      for (let i = 0; i < shown; i++) {
+        let fill = 1;
+        if (i === full && frac > 0) fill = frac;     // partial last pip
+        if (i > full) fill = 0;
+        html += '<span class="calc__pip"><span class="calc__pip-fill" style="transform:scaleY(' + fill.toFixed(2) + ')"></span></span>';
+      }
+      pipsEl.innerHTML = html;
+
+      noteEl.textContent = bu > MAX_PIPS
+        ? 'Ընդամենը ' + (Math.round(bu * 10) / 10) + ' միավոր (ցուցադրված է ' + MAX_PIPS + '-ը)'
+        : '1 հացային միավոր ≈ ' + CARBS_PER_BU + ' գ ածխաջուր';
+    }
+
+    catsEl.addEventListener('click', function (e) {
+      const btn = e.target.closest('.calc__cat');
+      if (!btn) return;
+      activeCat = btn.dataset.cat;
+      Array.prototype.forEach.call(catsEl.children, function (c) {
+        const on = c === btn;
+        c.classList.toggle('is-active', on);
+        c.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      activeFood = null;
+      searchEl.value = '';
+      searchEl.disabled = false;
+      searchEl.placeholder = 'Փնտրեք մթերքի անվանումը...';
+      weightEl.disabled = true;
+      weightEl.value = '';
+      closePanel();
+      compute();
+    });
+
+    searchEl.addEventListener('focus', function () {
+      if (activeCat) openPanel(itemsForQuery(searchEl.value));
+    });
+    searchEl.addEventListener('input', function () {
+      activeFood = null;
+      weightEl.disabled = true;
+      if (activeCat) openPanel(itemsForQuery(searchEl.value));
+      compute();
+    });
+    panelEl.addEventListener('mousedown', function (e) {
+      // mousedown (not click) so it fires before the input's blur closes the panel
+      const item = e.target.closest('.calc__combobox-item');
+      if (!item) return;
+      const food = (FOODS[activeCat] || []).find(function (f) { return f.name === item.dataset.name; });
+      if (food) selectFood(food);
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('#calcCombobox')) closePanel();
+    });
+
+    weightEl.addEventListener('input', compute);
+    btnEl.addEventListener('click', function () {
+      compute();
+      resultEl.classList.remove('pulse');
+      void resultEl.offsetWidth;       // restart animation
+      resultEl.classList.add('pulse');
+    });
+  })();
+  </script>
+</body>
+</html>
