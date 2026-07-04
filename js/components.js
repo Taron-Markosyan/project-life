@@ -108,7 +108,7 @@ function renderFooter() {
           <h4>Գործիքներ</h4>
           <ul>
             <li><a href="doctor-contact.html">Կապ բժշկի հետ</a></li>
-            <li><a href="calculator.html">Հաշվիչ</a></li>
+            <li><a href="calculator.html">Հացային միավորների հաշվիչ</a></li>
             <li><a href="diary.html">Գլյուկոզի մոնիթորինգի օրագիր</a></li>
             <li><a href="index.html#contact">Հետադարձ կապ</a></li>
           </ul>

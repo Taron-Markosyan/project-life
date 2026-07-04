@@ -43,11 +43,11 @@
             <div class="diary__fields">
               <div class="diary__field">
                 <label for="dDate">Ամսաթիվ</label>
-                <input class="diary__input" type="date" id="dDate">
+                <input class="diary__input" type="text" id="dDate" inputmode="numeric" placeholder="ՕՕ.ԱԱ.ՏՏՏՏ" pattern="\d{2}\.\d{2}\.\d{4}">
               </div>
               <div class="diary__field">
                 <label for="dTime">Ժամ</label>
-                <input class="diary__input" type="time" id="dTime">
+                <input class="diary__input" type="text" id="dTime" inputmode="numeric" placeholder="ԺԺ:ՐՐ" pattern="([01]\d|2[0-3]):[0-5]\d">
               </div>
               <div class="diary__field">
                 <label for="dValue">Արյան գլյուկոզ <span class="diary__unit-tag" id="dValueUnit">(mmol/L)</span></label>
@@ -63,22 +63,6 @@
             <div class="diary__form-actions">
               <button type="button" class="btn btn--maroon diary__add" id="dAdd">Ավելացնել</button>
               <button type="button" class="diary__cancel-edit" id="dCancelEdit" hidden>Չեղարկել</button>
-            </div>
-          </div>
-
-          <!-- SUMMARY (shown when there are entries) -->
-          <div class="diary__summary" id="dSummary" hidden>
-            <div class="diary__stat">
-              <span class="diary__stat-num" id="dStatCount">0</span>
-              <span class="diary__stat-label">Չափում</span>
-            </div>
-            <div class="diary__stat">
-              <span class="diary__stat-num" id="dStatAvg">–</span>
-              <span class="diary__stat-label">Միջին <span id="dStatAvgUnit">mmol/L</span></span>
-            </div>
-            <div class="diary__stat">
-              <span class="diary__stat-num" id="dStatRange">–</span>
-              <span class="diary__stat-label">Թիրախային միջակայքում</span>
             </div>
           </div>
 
@@ -134,7 +118,7 @@
     const dateEl = $('dDate'), timeEl = $('dTime'), valueEl = $('dValue'),
           noteEl = $('dNote'), errEl = $('dError'),
           rowsEl = $('dRows'), emptyEl = $('dEmpty'),
-          summaryEl = $('dSummary'), exportEl = $('dExport'),
+          exportEl = $('dExport'),
           valueUnitEl = $('dValueUnit'), avgUnitEl = $('dStatAvgUnit'),
           formTitleEl = $('dFormTitle'), addBtn = $('dAdd'), cancelBtn = $('dCancelEdit');
 
@@ -156,12 +140,27 @@
     }
     function unitLabel() { return unit === 'mgdl' ? 'mg/dL' : 'mmol/L'; }
     function statusOf(mmol) { return mmol < LOW ? 'low' : (mmol > HIGH ? 'high' : 'ok'); }
-    const STATUS_TEXT = { low: 'Ցածր', ok: 'Թիրախում', high: 'Բարձր' };
+    const STATUS_TEXT = { low: 'Ցածր', ok: 'Նորմայում', high: 'Բարձր' };
 
     function fmtDate(iso) {            // yyyy-mm-dd -> dd.mm.yyyy
       if (!iso) return '';
       const p = iso.split('-');
       return p.length === 3 ? p[2] + '.' + p[1] + '.' + p[0] : iso;
+    }
+
+    function parseDateInput(str) {     // dd.mm.yyyy -> yyyy-mm-dd, or null if invalid
+      if (!str) return null;
+      const m = str.trim().match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+      if (!m) return null;
+      const day = parseInt(m[1], 10), month = parseInt(m[2], 10), year = parseInt(m[3], 10);
+      if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+      const d = new Date(year, month - 1, day);
+      if (d.getFullYear() !== year || d.getMonth() !== month - 1 || d.getDate() !== day) return null;
+      return year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+    }
+
+    function isValidTime(str) {
+      return /^([01]\d|2[0-3]):[0-5]\d$/.test((str || '').trim());
     }
 
     /* ---- rendering ---- */
@@ -188,16 +187,10 @@
 
       const has = entries.length > 0;
       emptyEl.hidden = has;
-      summaryEl.hidden = !has;
       exportEl.hidden = !has;
       document.querySelector('.diary__log-head').hidden = !has;
 
       if (has) {
-        const avg = entries.reduce(function (s, e) { return s + e.mmol; }, 0) / entries.length;
-        const inRange = entries.filter(function (e) { return statusOf(e.mmol) === 'ok'; }).length;
-        $('dStatCount').textContent = entries.length;
-        $('dStatAvg').textContent = display(avg);
-        $('dStatRange').textContent = Math.round(inRange / entries.length * 100) + '%';
         avgUnitEl.textContent = unitLabel();
       }
     }
@@ -213,7 +206,7 @@
       const entry = entries.find(function (x) { return x.id === id; });
       if (!entry) return;
       editingId = id;
-      dateEl.value = entry.date;
+      dateEl.value = fmtDate(entry.date);
       timeEl.value = entry.time;
       valueEl.value = display(entry.mmol);
       noteEl.value = entry.note || '';
@@ -232,7 +225,7 @@
       cancelBtn.hidden = true;
       errEl.textContent = '';
       const now = new Date();
-      dateEl.value = now.toISOString().slice(0, 10);
+      dateEl.value = fmtDate(now.toISOString().slice(0, 10));
       timeEl.value = now.toTimeString().slice(0, 5);
       valueEl.value = ''; noteEl.value = '';
     }
@@ -241,8 +234,9 @@
     function addEntry() {
       errEl.textContent = '';
       const raw = parseFloat(valueEl.value);
-      if (!dateEl.value) { errEl.textContent = 'Ընտրեք ամսաթիվը։'; return; }
-      if (!timeEl.value) { errEl.textContent = 'Ընտրեք ժամը։'; return; }
+      const isoDate = parseDateInput(dateEl.value);
+      if (!isoDate) { errEl.textContent = 'Մուտքագրեք վավեր ամսաթիվ՝ ՕՕ.ԱԱ.ՏՏՏՏ ձևաչափով։'; return; }
+      if (!isValidTime(timeEl.value)) { errEl.textContent = 'Մուտքագրեք վավեր ժամ՝ ԺԺ:ՐՐ ձևաչափով (24-ժամյա)։'; return; }
       if (!raw || raw <= 0) { errEl.textContent = 'Մուտքագրեք գլյուկոզի վավեր մակարդակ։'; return; }
 
       const mmol = unit === 'mgdl' ? raw / MGDL : raw;
@@ -250,7 +244,7 @@
       if (editingId) {
         const entry = entries.find(function (x) { return x.id === editingId; });
         if (entry) {
-          entry.date = dateEl.value; entry.time = timeEl.value;
+          entry.date = isoDate; entry.time = timeEl.value;
           entry.mmol = mmol; entry.note = noteEl.value.trim();
         }
         save();
@@ -258,7 +252,7 @@
       } else {
         entries.push({
           id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-          date: dateEl.value, time: timeEl.value, mmol: mmol,
+          date: isoDate, time: timeEl.value, mmol: mmol,
           note: noteEl.value.trim()
         });
         save();
@@ -329,7 +323,7 @@
     /* ---- init ---- */
     (function init() {
       const now = new Date();
-      dateEl.value = now.toISOString().slice(0, 10);
+      dateEl.value = fmtDate(now.toISOString().slice(0, 10));
       timeEl.value = now.toTimeString().slice(0, 5);
       entries = load();
       render();
