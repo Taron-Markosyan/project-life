@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bread Unit Calculator — Project LIFE</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../calculator-styles.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <section class="page-head">
+      <div class="container">
+        <h1>Bread Unit Calculator</h1>
+        <p class="page-head__sub">Calculate carbohydrates and bread units for the right portion</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="calc-intro">
+          The Bread Unit Calculator helps you work out how many bread units a given
+          portion contains, based on the standard that 1 bread unit equals about 12 g
+          of carbohydrate. Select the food, enter the weight, and the result is
+          calculated automatically.
+        </p>
+
+        <div class="calc">
+          <div class="calc__grid">
+
+            <!-- INPUTS -->
+            <div class="calc__panel">
+              <div class="calc__step">
+                <div class="calc__step-label">
+                  <span class="calc__step-num">1</span> Select the food type
+                </div>
+                <div class="calc__cats" id="calcCats" role="group" aria-label="Food type">
+                  <button type="button" class="calc__cat" data-cat="dairy" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h8l-1 3v3l2 4v9a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-9l2-4V5L8 2Z"/><path d="M7 13h10"/></svg>
+                    <span>Dairy</span>
+                  </button>
+                  <button type="button" class="calc__cat" data-cat="grains" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11c0-3 2-5 5-5h6c3 0 5 2 5 5 0 1.5-1 2.5-2 2.5v4a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-4c-1 0-2-1-2-2.5Z"/><path d="M9 6.5 8 13M15 6.5 16 13"/></svg>
+                    <span>Grains</span>
+                  </button>
+                  <button type="button" class="calc__cat" data-cat="veg" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20c-4 0-7-3-7-7 0-2 1-4 3-5 1.6-.8 4-1 6 0"/><path d="M13 20c4 0 7-3 7-7 0-3-2-5-5-5-2 0-3 1-4 2"/><path d="M12 8c0-3 1-5 4-6"/></svg>
+                    <span>Vegetables</span>
+                  </button>
+                  <button type="button" class="calc__cat" data-cat="fruit" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8c-2-2-6-2-7 1-1.4 3.5 1 9 4 10 1.4.5 2.6.5 4 0"/><path d="M12 8c2-2 6-2 7 1 1.4 3.5-1 9-4 10-1 .4-2 .5-3 .2"/><path d="M12 8V4"/><path d="M12 4c1-1.5 3-2 4-1"/></svg>
+                    <span>Fruit</span>
+                  </button>
+                  <button type="button" class="calc__cat" data-cat="sweets" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M7 12h10" transform="rotate(45 12 12)"/></svg>
+                    <span>Sweets</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="calc__step">
+                <label class="calc__step-label" for="calcFoodSearch">
+                  <span class="calc__step-num">2</span> Select the food name
+                </label>
+                <div class="calc__combobox" id="calcCombobox">
+                  <input class="calc__field" id="calcFoodSearch" type="text" autocomplete="off"
+                         placeholder="First select a type" disabled>
+                  <div class="calc__combobox-panel" id="calcFoodPanel" role="listbox" hidden></div>
+                </div>
+              </div>
+
+              <div class="calc__step">
+                <label class="calc__step-label" for="calcWeight">
+                  <span class="calc__step-num">3</span> Enter the weight
+                </label>
+                <div class="calc__weight">
+                  <input class="calc__field" id="calcWeight" type="number" inputmode="numeric"
+                         min="0" max="5000" step="10" placeholder="0" disabled>
+                  <span class="calc__unit-tag" id="calcUnitTag">grams</span>
+                </div>
+                <p class="calc__hint" id="calcHint"></p>
+              </div>
+
+              <button type="button" class="btn btn--maroon calc__btn" id="calcBtn">Calculate</button>
+            </div>
+
+            <!-- RESULT -->
+            <div class="calc__result is-empty" id="calcResult" aria-live="polite">
+              <div class="calc__result-label">Bread Units</div>
+              <div class="calc__bu">
+                <span class="calc__bu-num" id="calcBu">0</span>
+                <span class="calc__bu-unit">units</span>
+              </div>
+
+              <p class="calc__empty">Select a food and enter the weight to see the result here.</p>
+
+              <div class="calc__pips" id="calcPips" aria-hidden="true"></div>
+
+              <div class="calc__carbs">
+                <span class="calc__carbs-label">Total Carbohydrates</span>
+                <span class="calc__carbs-val" id="calcCarbs">0 g</span>
+              </div>
+
+              <p class="calc__note-inline" id="calcNote"></p>
+            </div>
+
+          </div>
+
+          <div class="calc__disclaimer">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+            <span>This calculation is approximate and based on average figures. It does not
+            replace the advice of a doctor or diabetes education specialist. Make decisions
+            about your insulin dose together with your doctor.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+
+  <script>window.ACTIVE_PAGE = 'calculator.html';</script>
+  <script src="../js/components.js"></script>
+  <script src="../js/main.js"></script>
+
+
+  <!-- ===========================================================
+       CALCULATOR LOGIC (page-specific)
+       Each food stores the exact portion (in grams or ml) that
+       equals 1 bread unit, taken directly from the reference table
+       rather than derived from carbs-per-100g. 1 BU = 12 g
+       carbohydrate (CARBS_PER_BU) is used only to show an
+       approximate carb total alongside the result.
+       =========================================================== -->
+  <script>
+  (function () {
+    const CARBS_PER_BU = 12;
+
+    // per = grams (or ml) of the food that equal exactly 1 bread unit
+    const FOODS = {
+      dairy: [
+        { name: 'Milk',                                  unit: 'ml', per: 200 },
+        { name: 'Kefir (unsweetened)',                   unit: 'ml', per: 200 },
+        { name: 'Kefir (with fruit)',                    unit: 'ml', per: 100 },
+        { name: 'Yogurt (unsweetened)',                  unit: 'ml', per: 200 },
+        { name: 'Yogurt (fruit)',                        unit: 'ml', per: 100 },
+        { name: 'Cream 9%',                              unit: 'ml', per: 200 },
+        { name: 'Matsun',                                unit: 'ml', per: 200 },
+        { name: 'Cottage cheese',                        unit: 'g',  per: 100 },
+        { name: 'Cottage cheese (glazed)',                unit: 'g',  per: 35 },
+        { name: 'Cottage cheese (with raisins)',          unit: 'g',  per: 38 },
+        { name: 'Powdered milk',                          unit: 'g',  per: 30 },
+        { name: 'Ice cream (no wafer or chocolate)',      unit: 'g',  per: 60 },
+        { name: 'Ice cream (glazed, with wafer)',         unit: 'g',  per: 45 },
+      ],
+      grains: [
+        { name: 'Black bread',                            unit: 'g', per: 25 },
+        { name: 'Bread (white/dark)',                     unit: 'g', per: 20 },
+        { name: 'Bread with bran',                        unit: 'g', per: 30 },
+        { name: 'Borodinsky bread',                       unit: 'g', per: 15 },
+        { name: 'Lavash',                                 unit: 'g', per: 20 },
+        { name: 'Dried bread (rusk)',                     unit: 'g', per: 20 },
+        { name: 'Dried bagel rings (sushki)',             unit: 'g', per: 20 },
+        { name: 'Crackers',                               unit: 'g', per: 20 },
+        { name: 'Grains/cereal (raw)',                    unit: 'g', per: 20 },
+        { name: 'Grains/cereal (cooked)',                 unit: 'g', per: 55 },
+        { name: 'Pasta (raw)',                            unit: 'g', per: 15 },
+        { name: 'Pasta (cooked)',                         unit: 'g', per: 50 },
+        { name: 'Crepe/blini (no meat)',                  unit: 'g', per: 40 },
+        { name: 'Crepe/blini (with meat)',                unit: 'g', per: 50 },
+        { name: 'Bun',                                    unit: 'g', per: 20 },
+        { name: 'Gingerbread cookie',                     unit: 'g', per: 40 },
+        { name: 'Biscuit/cookie',                         unit: 'g', per: 15 },
+        { name: 'Wafer',                                  unit: 'g', per: 15 },
+        { name: 'Pastry (pirozhki)',                      unit: 'g', per: 20 },
+        { name: 'Sausage (boiled, "doctor\'s")',          unit: 'g', per: 100 },
+        { name: 'Cutlet (medium size)',                   unit: 'g', per: 65 },
+        { name: 'Pelmeni (dumplings)',                    unit: 'g', per: 50 },
+        { name: 'Frankfurter sausage',                    unit: 'g', per: 100 },
+        { name: 'Sardelka (small sausage)',               unit: 'g', per: 100 },
+        { name: 'Oladi (small pancakes)',                 unit: 'g', per: 50 },
+        { name: 'Flour (any type)',                       unit: 'g', per: 15 },
+        { name: 'Starch',                                 unit: 'g', per: 15 },
+        { name: 'Popcorn (salty)',                        unit: 'g', per: 15 },
+        { name: 'Puff pastry dough (cooked)',             unit: 'g', per: 35 },
+        { name: 'Yeast dough (cooked)',                   unit: 'g', per: 25 },
+      ],
+      veg: [
+        { name: 'Beans (raw)',                            unit: 'g', per: 20 },
+        { name: 'Beans (cooked)',                         unit: 'g', per: 50 },
+        { name: 'Green peas (canned)',                    unit: 'g', per: 120 },
+        { name: 'Dried peas',                             unit: 'g', per: 20 },
+        { name: 'Potato (raw)',                           unit: 'g', per: 90 },
+        { name: 'Mashed potato',                          unit: 'g', per: 80 },
+        { name: 'Fried potato (fries)',                   unit: 'g', per: 35 },
+        { name: 'Potato chips',                           unit: 'g', per: 25 },
+        { name: 'Ketchup',                                unit: 'g', per: 15 },
+        { name: 'Corn (on the cob)',                      unit: 'g', per: 100 },
+        { name: 'Corn (canned kernels)',                  unit: 'g', per: 65 },
+        { name: 'Carrot',                                 unit: 'g', per: 400 },
+        { name: 'Lentils (dry)',                          unit: 'g', per: 20 },
+        { name: 'Lentils (cooked)',                       unit: 'g', per: 50 },
+        { name: 'Pumpkin',                                unit: 'g', per: 200 },
+        { name: 'Jerusalem artichoke',                    unit: 'g', per: 70 },
+        { name: 'Cabbage juice',                          unit: 'ml', per: 500 },
+        { name: 'Potato juice',                           unit: 'ml', per: 125 },
+        { name: 'Carrot juice',                           unit: 'ml', per: 125 },
+        { name: 'Cucumber juice',                         unit: 'ml', per: 500 },
+        { name: 'Tomato juice',                           unit: 'ml', per: 300 },
+      ],
+      fruit: [
+        { name: 'Apple',                                  unit: 'g', per: 86 },
+        { name: 'Pear',                                   unit: 'g', per: 80 },
+        { name: 'Grapes',                                 unit: 'g', per: 71 },
+        { name: 'Banana (peeled)',                        unit: 'g', per: 60 },
+        { name: 'Apricot (3 pieces)',                     unit: 'g', per: 90 },
+        { name: 'Plum',                                   unit: 'g', per: 110 },
+        { name: 'Peach (with pit, 1 piece)',              unit: 'g', per: 120 },
+        { name: 'Nectarine (1 piece)',                    unit: 'g', per: 120 },
+        { name: 'Strawberries (10 pieces)',               unit: 'g', per: 150 },
+        { name: 'Kiwi (1 piece)',                         unit: 'g', per: 80 },
+        { name: 'Fig (1 piece)',                          unit: 'g', per: 80 },
+        { name: 'Pomegranate (peeled)',                   unit: 'g', per: 130 },
+        { name: 'Raspberries (1 cup)',                    unit: 'g', per: 140 },
+        { name: 'Wild strawberries (1 cup)',              unit: 'g', per: 140 },
+        { name: 'Tangerine (peeled)',                     unit: 'g', per: 100 },
+        { name: 'Orange',                                 unit: 'g', per: 100 },
+        { name: 'Persimmon (medium, 1 piece)',            unit: 'g', per: 80 },
+        { name: 'Feijoa (10 pieces)',                     unit: 'g', per: 160 },
+        { name: 'Pineapple (with peel)',                  unit: 'g', per: 375 },
+        { name: 'Watermelon',                             unit: 'g', per: 150 },
+        { name: 'Melon',                                  unit: 'g', per: 150 },
+        { name: 'Mango juice',                            unit: 'ml', per: 110 },
+        { name: 'Orange juice',                           unit: 'ml', per: 110 },
+      ],
+      sweets: [
+        { name: 'Jam',                                    unit: 'g', per: 14 },
+        { name: 'Cola / Sprite / Fanta',                  unit: 'ml', per: 100 },
+        { name: 'Chestnut',                               unit: 'g', per: 35 },
+        { name: 'Kvass',                                  unit: 'ml', per: 200 },
+        { name: 'Kissel (fruit dessert drink)',           unit: 'ml', per: 300 },
+        { name: 'Chocolate candy',                        unit: 'g', per: 12 },
+        { name: 'Honey',                                  unit: 'g', per: 14 },
+        { name: 'Walnut',                                 unit: 'g', per: 90 },
+        { name: 'Peanut',                                 unit: 'g', per: 40 },
+        { name: 'Almond',                                 unit: 'g', per: 65 },
+        { name: 'Hazelnut',                                unit: 'g', per: 90 },
+        { name: 'Pistachio',                               unit: 'g', per: 60 },
+        { name: 'Marmalade',                               unit: 'g', per: 20 },
+        { name: 'Sugar',                                   unit: 'g', per: 10 },
+        { name: 'Granulated sugar',                        unit: 'g', per: 10 },
+        { name: 'Fructose',                                unit: 'g', per: 12 },
+        { name: 'Chocolate (regular)',                     unit: 'g', per: 20 },
+        { name: 'Chocolate (with sugar substitute)',       unit: 'g', per: 30 },
+        { name: 'Chocolate (milk)',                        unit: 'g', per: 20 },
+        { name: 'Mars bar',                                unit: 'g', per: 20 },
+      ],
+    };
+
+    const MAX_PIPS = 12;
+
+    const catsEl    = document.getElementById('calcCats');
+    const searchEl  = document.getElementById('calcFoodSearch');
+    const panelEl   = document.getElementById('calcFoodPanel');
+    const weightEl  = document.getElementById('calcWeight');
+    const unitTagEl = document.getElementById('calcUnitTag');
+    const hintEl    = document.getElementById('calcHint');
+    const btnEl     = document.getElementById('calcBtn');
+    const resultEl  = document.getElementById('calcResult');
+    const buEl      = document.getElementById('calcBu');
+    const carbsEl   = document.getElementById('calcCarbs');
+    const pipsEl    = document.getElementById('calcPips');
+    const noteEl    = document.getElementById('calcNote');
+
+    let activeCat  = null;
+    let activeFood = null; // the currently selected food object
+
+    function openPanel(items) {
+      if (!items.length) {
+        panelEl.innerHTML = '<div class="calc__combobox-empty">No results found</div>';
+      } else {
+        panelEl.innerHTML = items.map(function (f) {
+          return '<div class="calc__combobox-item" data-name="' + f.name + '" role="option">' + f.name + '</div>';
+        }).join('');
+      }
+      panelEl.hidden = false;
+    }
+
+    function closePanel() { panelEl.hidden = true; }
+
+    function itemsForQuery(query) {
+      const list = FOODS[activeCat] || [];
+      const q = (query || '').trim().toLowerCase();
+      if (!q) return list;
+      return list.filter(function (f) { return f.name.toLowerCase().indexOf(q) !== -1; });
+    }
+
+    function selectFood(food) {
+      activeFood = food;
+      searchEl.value = food.name;
+      unitTagEl.textContent = food.unit === 'ml' ? 'ml' : 'grams';
+      weightEl.disabled = false;
+      closePanel();
+      compute();
+    }
+
+    function compute() {
+      const grams = parseFloat(weightEl.value);
+
+      if (!activeFood) { hintEl.textContent = ''; }
+      else { hintEl.textContent = '1 BU ≈ ' + activeFood.per + ' ' + activeFood.unit + ' (' + activeFood.name + ')'; }
+
+      if (!activeFood || !grams || grams <= 0) {
+        resultEl.classList.add('is-empty');
+        buEl.textContent = '0';
+        carbsEl.textContent = '0 g';
+        pipsEl.innerHTML = '';
+        noteEl.textContent = '';
+        return;
+      }
+
+      const bu = grams / activeFood.per;
+      const totalCarbs = bu * CARBS_PER_BU;
+
+      resultEl.classList.remove('is-empty');
+      buEl.textContent = (Math.round(bu * 10) / 10).toLocaleString('en-US');
+      carbsEl.textContent = Math.round(totalCarbs) + ' g';
+
+      // pips: one token per bread unit, last token fills proportionally
+      const full = Math.floor(bu);
+      const frac = bu - full;
+      const shown = Math.min(Math.ceil(bu), MAX_PIPS);
+      let html = '';
+      for (let i = 0; i < shown; i++) {
+        let fill = 1;
+        if (i === full && frac > 0) fill = frac;     // partial last pip
+        if (i > full) fill = 0;
+        html += '<span class="calc__pip"><span class="calc__pip-fill" style="transform:scaleY(' + fill.toFixed(2) + ')"></span></span>';
+      }
+      pipsEl.innerHTML = html;
+
+      noteEl.textContent = bu > MAX_PIPS
+        ? 'Total: ' + (Math.round(bu * 10) / 10) + ' units (showing ' + MAX_PIPS + ')'
+        : '1 bread unit ≈ ' + CARBS_PER_BU + ' g carbohydrate';
+    }
+
+    catsEl.addEventListener('click', function (e) {
+      const btn = e.target.closest('.calc__cat');
+      if (!btn) return;
+      activeCat = btn.dataset.cat;
+      Array.prototype.forEach.call(catsEl.children, function (c) {
+        const on = c === btn;
+        c.classList.toggle('is-active', on);
+        c.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      activeFood = null;
+      searchEl.value = '';
+      searchEl.disabled = false;
+      searchEl.placeholder = 'Search for a food name...';
+      weightEl.disabled = true;
+      weightEl.value = '';
+      closePanel();
+      compute();
+    });
+
+    searchEl.addEventListener('focus', function () {
+      if (activeCat) openPanel(itemsForQuery(searchEl.value));
+    });
+    searchEl.addEventListener('input', function () {
+      activeFood = null;
+      weightEl.disabled = true;
+      if (activeCat) openPanel(itemsForQuery(searchEl.value));
+      compute();
+    });
+    panelEl.addEventListener('mousedown', function (e) {
+      // mousedown (not click) so it fires before the input's blur closes the panel
+      const item = e.target.closest('.calc__combobox-item');
+      if (!item) return;
+      const food = (FOODS[activeCat] || []).find(function (f) { return f.name === item.dataset.name; });
+      if (food) selectFood(food);
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('#calcCombobox')) closePanel();
+    });
+
+    weightEl.addEventListener('input', compute);
+    btnEl.addEventListener('click', function () {
+      compute();
+      resultEl.classList.remove('pulse');
+      void resultEl.offsetWidth;       // restart animation
+      resultEl.classList.add('pulse');
+    });
+  })();
+  </script>
+</body>
+</html>

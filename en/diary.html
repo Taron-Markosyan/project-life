@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glucose Monitoring Diary — Project LIFE</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <section class="page-head">
+      <div class="container">
+        <h1>Glucose Monitoring Diary</h1>
+        <p class="page-head__sub">Record your blood glucose and track changes over time</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="diary-intro">
+          The Glucose Monitoring Diary lets you record your blood glucose levels, track
+          changes over time, and better understand how your body responds to food, insulin,
+          and daily routine. Your data is stored only on your own device and can be
+          exported as a CSV or PDF file to share with your doctor.
+        </p>
+
+        <div class="diary">
+          <!-- ENTRY FORM -->
+          <div class="diary__form-card">
+            <div class="diary__form-top">
+              <h2 class="diary__form-title" id="dFormTitle">New Entry</h2>
+              <div class="diary__unit" role="group" aria-label="Measurement unit">
+                <button type="button" class="diary__unit-btn is-active" data-unit="mmol">mmol/L</button>
+                <button type="button" class="diary__unit-btn" data-unit="mgdl">mg/dL</button>
+              </div>
+            </div>
+
+            <div class="diary__fields">
+              <div class="diary__field">
+                <label for="dDate">Date</label>
+                <input class="diary__input" type="text" id="dDate" inputmode="numeric" placeholder="DD.MM.YYYY" pattern="\d{2}\.\d{2}\.\d{4}">
+              </div>
+              <div class="diary__field">
+                <label for="dTime">Time</label>
+                <input class="diary__input" type="text" id="dTime" inputmode="numeric" placeholder="HH:MM" pattern="([01]\d|2[0-3]):[0-5]\d">
+              </div>
+              <div class="diary__field">
+                <label for="dValue">Blood Glucose <span class="diary__unit-tag" id="dValueUnit">(mmol/L)</span></label>
+                <input class="diary__input" type="number" id="dValue" inputmode="decimal" min="0" step="0.1" placeholder="0">
+              </div>
+              <div class="diary__field diary__field--wide">
+                <label for="dNote">Note <span class="diary__optional">(optional)</span></label>
+                <input class="diary__input" type="text" id="dNote" maxlength="120" placeholder="e.g. lunch, insulin, exercise">
+              </div>
+            </div>
+
+            <p class="diary__form-error" id="dError" role="alert"></p>
+            <div class="diary__form-actions">
+              <button type="button" class="btn btn--maroon diary__add" id="dAdd">Add</button>
+              <button type="button" class="diary__cancel-edit" id="dCancelEdit" hidden>Cancel</button>
+            </div>
+          </div>
+
+          <!-- LOG -->
+          <div class="diary__log" id="dLog">
+            <div class="diary__log-head" aria-hidden="true">
+              <span>Status</span><span>Date</span><span>Time</span>
+              <span>Level</span><span>Note</span><span></span>
+            </div>
+            <div id="dRows"></div>
+            <p class="diary__empty" id="dEmpty">No entries yet. Add your first one using the form above.</p>
+          </div>
+
+          <!-- EXPORT -->
+          <div class="diary__export" id="dExport" hidden>
+            <button type="button" class="btn btn--navy" id="dCsv">Export CSV</button>
+            <button type="button" class="btn btn--navy" id="dPdf">Export PDF</button>
+          </div>
+
+          <div class="diary__disclaimer">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+            <span>The target range (3.9–10.0 mmol/L) is a general guideline and may vary from
+            person to person. Decide your individual targets together with your doctor. Your
+            data is stored only in this browser, on your own device.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+
+  <script>window.ACTIVE_PAGE = 'diary.html';</script>
+  <script src="../js/components.js"></script>
+  <script src="../js/main.js"></script>
+
+  <!-- ===========================================================
+       DIARY LOGIC (page-specific)
+       Readings are stored canonically in mmol/L in localStorage and
+       converted for display. Target range thresholds (mmol/L) are
+       LOW and HIGH below — adjust if a clinician prefers other values.
+       =========================================================== -->
+  <script>
+  (function () {
+    const STORAGE_KEY = 'projectlife_glucose_diary_v1';
+    const LOW = 3.9, HIGH = 10.0;           // mmol/L target band
+    const MGDL = 18.0;                       // 1 mmol/L = 18 mg/dL
+
+    let unit = 'mmol';
+    let entries = [];
+    let editingId = null;
+
+    const $ = function (id) { return document.getElementById(id); };
+    const dateEl = $('dDate'), timeEl = $('dTime'), valueEl = $('dValue'),
+          noteEl = $('dNote'), errEl = $('dError'),
+          rowsEl = $('dRows'), emptyEl = $('dEmpty'),
+          exportEl = $('dExport'),
+          valueUnitEl = $('dValueUnit'),
+          formTitleEl = $('dFormTitle'), addBtn = $('dAdd'), cancelBtn = $('dCancelEdit');
+
+    /* ---- storage (guarded so a sandboxed preview still works) ---- */
+    function load() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+      catch (e) { return []; }
+    }
+    function save() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
+      catch (e) { /* storage unavailable — keep in memory for this session */ }
+    }
+
+    /* ---- unit helpers ---- */
+    function display(mmol) {
+      return unit === 'mgdl'
+        ? String(Math.round(mmol * MGDL))
+        : (Math.round(mmol * 10) / 10).toLocaleString('en-US');
+    }
+    function unitLabel() { return unit === 'mgdl' ? 'mg/dL' : 'mmol/L'; }
+    function statusOf(mmol) { return mmol < LOW ? 'low' : (mmol > HIGH ? 'high' : 'ok'); }
+    const STATUS_TEXT = { low: 'Low', ok: 'Good', high: 'High' };
+
+    function fmtDate(iso) {            // yyyy-mm-dd -> dd.mm.yyyy
+      if (!iso) return '';
+      const p = iso.split('-');
+      return p.length === 3 ? p[2] + '.' + p[1] + '.' + p[0] : iso;
+    }
+
+    function parseDateInput(str) {     // dd.mm.yyyy -> yyyy-mm-dd, or null if invalid
+      if (!str) return null;
+      const m = str.trim().match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+      if (!m) return null;
+      const day = parseInt(m[1], 10), month = parseInt(m[2], 10), year = parseInt(m[3], 10);
+      if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+      const d = new Date(year, month - 1, day);
+      if (d.getFullYear() !== year || d.getMonth() !== month - 1 || d.getDate() !== day) return null;
+      return year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+    }
+
+    function isValidTime(str) {
+      return /^([01]\d|2[0-3]):[0-5]\d$/.test((str || '').trim());
+    }
+
+    /* ---- rendering ---- */
+    function render() {
+      // newest first
+      const sorted = entries.slice().sort(function (a, b) {
+        return (b.date + b.time).localeCompare(a.date + a.time);
+      });
+
+      rowsEl.innerHTML = sorted.map(function (e) {
+        const st = statusOf(e.mmol);
+        return '<div class="diary__row diary__row--' + st + '">' +
+          '<span class="diary__cell diary__cell--status"><span class="diary__dot"></span>' + STATUS_TEXT[st] + '</span>' +
+          '<span class="diary__cell" data-label="Date">' + fmtDate(e.date) + '</span>' +
+          '<span class="diary__cell" data-label="Time">' + (e.time || '') + '</span>' +
+          '<span class="diary__cell diary__cell--value" data-label="Level">' + display(e.mmol) + ' <small>' + unitLabel() + '</small></span>' +
+          '<span class="diary__cell diary__cell--note" data-label="Note">' + (e.note ? escapeHtml(e.note) : '—') + '</span>' +
+          '<span class="diary__cell diary__cell--action">' +
+            '<button type="button" class="diary__edit" data-id="' + e.id + '" aria-label="Edit">Edit</button>' +
+            '<button type="button" class="diary__del" data-id="' + e.id + '" aria-label="Delete">Delete</button>' +
+          '</span>' +
+          '</div>';
+      }).join('');
+
+      const has = entries.length > 0;
+      emptyEl.hidden = has;
+      exportEl.hidden = !has;
+      document.querySelector('.diary__log-head').hidden = !has;
+
+      if (has) {
+        valueUnitEl.textContent = '(' + unitLabel() + ')';
+      }
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    /* ---- edit mode ---- */
+    function startEdit(id) {
+      const entry = entries.find(function (x) { return x.id === id; });
+      if (!entry) return;
+      editingId = id;
+      dateEl.value = fmtDate(entry.date);
+      timeEl.value = entry.time;
+      valueEl.value = display(entry.mmol);
+      noteEl.value = entry.note || '';
+      formTitleEl.textContent = 'Edit Entry';
+      addBtn.textContent = 'Save Changes';
+      cancelBtn.hidden = false;
+      errEl.textContent = '';
+      valueEl.focus();
+      document.querySelector('.diary__form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function cancelEdit() {
+      editingId = null;
+      formTitleEl.textContent = 'New Entry';
+      addBtn.textContent = 'Add';
+      cancelBtn.hidden = true;
+      errEl.textContent = '';
+      const now = new Date();
+      dateEl.value = fmtDate(now.toISOString().slice(0, 10));
+      timeEl.value = now.toTimeString().slice(0, 5);
+      valueEl.value = ''; noteEl.value = '';
+    }
+
+    /* ---- actions ---- */
+    function addEntry() {
+      errEl.textContent = '';
+      const raw = parseFloat(valueEl.value);
+      const isoDate = parseDateInput(dateEl.value);
+      if (!isoDate) { errEl.textContent = 'Enter a valid date in DD.MM.YYYY format.'; return; }
+      if (!isValidTime(timeEl.value)) { errEl.textContent = 'Enter a valid time in HH:MM format (24-hour).'; return; }
+      if (!raw || raw <= 0) { errEl.textContent = 'Enter a valid glucose level.'; return; }
+
+      const mmol = unit === 'mgdl' ? raw / MGDL : raw;
+
+      if (editingId) {
+        const entry = entries.find(function (x) { return x.id === editingId; });
+        if (entry) {
+          entry.date = isoDate; entry.time = timeEl.value;
+          entry.mmol = mmol; entry.note = noteEl.value.trim();
+        }
+        save();
+        cancelEdit();
+      } else {
+        entries.push({
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          date: isoDate, time: timeEl.value, mmol: mmol,
+          note: noteEl.value.trim()
+        });
+        save();
+        valueEl.value = ''; noteEl.value = '';
+        valueEl.focus();
+      }
+      render();
+    }
+
+    rowsEl.addEventListener('click', function (e) {
+      const editBtn = e.target.closest('.diary__edit');
+      if (editBtn) { startEdit(editBtn.dataset.id); return; }
+
+      const delBtn = e.target.closest('.diary__del');
+      if (delBtn) {
+        entries = entries.filter(function (x) { return x.id !== delBtn.dataset.id; });
+        if (editingId === delBtn.dataset.id) cancelEdit();
+        save();
+        render();
+      }
+    });
+
+    $('dAdd').addEventListener('click', addEntry);
+    $('dCancelEdit').addEventListener('click', cancelEdit);
+    valueEl.addEventListener('keydown', function (e) { if (e.key === 'Enter') addEntry(); });
+
+    // unit toggle
+    document.querySelector('.diary__unit').addEventListener('click', function (e) {
+      const btn = e.target.closest('.diary__unit-btn');
+      if (!btn) return;
+      unit = btn.dataset.unit;
+      Array.prototype.forEach.call(this.children, function (c) {
+        c.classList.toggle('is-active', c === btn);
+      });
+      valueUnitEl.textContent = '(' + unitLabel() + ')';
+      valueEl.step = unit === 'mgdl' ? '1' : '0.1';
+      render();
+    });
+
+    /* ---- export ---- */
+    function exportCsv() {
+      const head = ['Date', 'Time', 'Level (' + unitLabel() + ')', 'Status', 'Note'];
+      const rows = entries.slice().sort(function (a, b) {
+        return (a.date + a.time).localeCompare(b.date + b.time);
+      }).map(function (e) {
+        return [fmtDate(e.date), e.time, display(e.mmol), STATUS_TEXT[statusOf(e.mmol)],
+                '"' + (e.note || '').replace(/"/g, '""') + '"'].join(',');
+      });
+      const csv = '\ufeff' + head.join(',') + '\n' + rows.join('\n');   // BOM for Excel
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'glucose-diary.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function exportPdf() {
+      // Browser print -> "Save as PDF".
+      document.body.classList.add('diary-printing');
+      window.print();
+      setTimeout(function () { document.body.classList.remove('diary-printing'); }, 300);
+    }
+
+    $('dCsv').addEventListener('click', exportCsv);
+    $('dPdf').addEventListener('click', exportPdf);
+
+    /* ---- init ---- */
+    (function init() {
+      const now = new Date();
+      dateEl.value = fmtDate(now.toISOString().slice(0, 10));
+      timeEl.value = now.toTimeString().slice(0, 5);
+      entries = load();
+      render();
+    })();
+  })();
+  </script>
+</body>
+</html>

@@ -224,6 +224,27 @@ section[id] { scroll-margin-top: 88px; }
   transition: transform 0.25s, opacity 0.25s;
 }
 
+.nav__lang { position: relative; margin-left: 12px; }
+.nav__lang-toggle {
+  display: flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 999px; padding: 6px 12px; cursor: pointer;
+  color: inherit; font-family: var(--font-body); font-size: 0.78rem; font-weight: 600;
+}
+.nav__lang-toggle svg { width: 16px; height: 16px; }
+.nav__lang-menu {
+  display: none; position: absolute; top: calc(100% + 8px); right: 0;
+  background: var(--cream); border-radius: 10px; box-shadow: var(--shadow-card);
+  min-width: 130px; padding: 6px; z-index: 50; list-style: none;
+}
+.nav__lang-menu.is-open { display: block; }
+.nav__lang-menu a {
+  display: block; padding: 8px 12px; border-radius: 6px;
+  color: var(--text-dark); font-size: 0.85rem; text-decoration: none;
+}
+.nav__lang-menu a:hover { background: var(--cream-soft); }
+.nav__lang-menu a[aria-current="page"] { font-weight: 700; color: var(--maroon); }
+
 
 /* === 5. BUTTONS & LINKS ==========================================
    .btn is the shared button style; modifiers change the colour. */
