@@ -51,7 +51,7 @@
               </div>
               <div class="diary__field">
                 <label for="dValue">Blood Glucose <span class="diary__unit-tag" id="dValueUnit">(mmol/L)</span></label>
-                <input class="diary__input" type="number" id="dValue" inputmode="decimal" min="0" step="0.1" placeholder="0">
+                <input class="diary__input" type="text" id="dValue" inputmode="decimal" placeholder="0">
               </div>
               <div class="diary__field diary__field--wide">
                 <label for="dNote">Note <span class="diary__optional">(optional)</span></label>
@@ -233,11 +233,12 @@
     /* ---- actions ---- */
     function addEntry() {
       errEl.textContent = '';
-      const raw = parseFloat(valueEl.value);
+      const raw = parseFloat((valueEl.value || '').replace(',', '.'));
+      const maxAllowed = unit === 'mgdl' ? 720 : 40;
       const isoDate = parseDateInput(dateEl.value);
       if (!isoDate) { errEl.textContent = 'Enter a valid date in DD.MM.YYYY format.'; return; }
       if (!isValidTime(timeEl.value)) { errEl.textContent = 'Enter a valid time in HH:MM format (24-hour).'; return; }
-      if (!raw || raw <= 0) { errEl.textContent = 'Enter a valid glucose level.'; return; }
+      if (!raw || raw <= 0 || raw > maxAllowed) { errEl.textContent = 'Enter a valid glucose level (0–' + maxAllowed + ' ' + unitLabel() + ').'; return; }
 
       const mmol = unit === 'mgdl' ? raw / MGDL : raw;
 

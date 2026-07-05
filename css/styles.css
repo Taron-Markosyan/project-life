@@ -367,6 +367,19 @@ section[id] { scroll-margin-top: 88px; }
 .funding__disclaimer { color: #f1ebe9; padding-block: 34px; }
 .funding__disclaimer p { max-width: 920px; margin-inline: auto; text-align: center; font-size: 0.95rem; line-height: 1.7; }
 
+@media (max-width: 600px) {
+  .funding__disclaimer p { text-align: left; }
+  .funding__funders, .funding__partners {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+  .funding__funders img, .funding__partners img {
+    max-width: 140px;
+    width: 100%;
+    height: auto;
+  }
+}
 @media (max-width: 560px) {
   .funding__funders img { height: 56px; }
   .funding__partners img { height: 40px; }
@@ -472,6 +485,36 @@ section[id] { scroll-margin-top: 88px; }
   border-top: 1px solid var(--line-on-light);
 }
 .programs__table td { color: var(--text-dark); }
+
+@media (max-width: 700px) {
+  .programs__table thead { display: none; }
+  .programs__table,
+  .programs__table tbody,
+  .programs__table tr,
+  .programs__table td { display: block; width: 100%; }
+  .programs__table tr {
+    margin-bottom: 20px;
+    border: 1px solid var(--line-on-light);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .programs__table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line-on-light);
+    text-align: left;
+  }
+  .programs__table td:last-child { border-bottom: none; }
+  .programs__table td::before {
+    content: attr(data-label);
+    display: block;
+    font-weight: 600;
+    font-size: 0.78rem;
+    color: var(--maroon);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+}
 
 
 /* === 13. FAQ ACCORDION ===========================================
@@ -957,7 +1000,8 @@ select.calc__field { appearance: none; -webkit-appearance: none; cursor: pointer
 
 @media (max-width: 860px) {
   .calc__grid { grid-template-columns: 1fr; }
-  .calc__cats { grid-template-columns: repeat(3, 1fr); }
+  .calc__cats { grid-template-columns: repeat(2, 1fr); }
+  .calc__cat span { font-size: 0.76rem; }
 }
 @media (max-width: 420px) {
   .calc__cats { grid-template-columns: repeat(2, 1fr); }
