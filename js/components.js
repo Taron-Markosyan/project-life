@@ -114,7 +114,7 @@ const FOOTER_TXT = {
     type1: 'Type 1 Diabetes',
     programs: 'State Support Programs',
     tools: 'Tools',
-    doctor: 'Contact a Doctor',
+    doctor: 'Contact an Endocrinologist Consultant',
     calc: 'Bread Unit Calculator',
     diary: 'Glucose Monitoring Diary',
     contact: 'Contact',
